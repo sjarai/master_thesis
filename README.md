@@ -19,4 +19,5 @@ In section 4.2 in the thesis, the results of the simulation study are described.
 ### Contact
 
 For questions, comments or further information, please contact me: 
+
 Sjarai Eikenhout - sjaraieikenhout@gmail.com
