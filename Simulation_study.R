@@ -202,9 +202,7 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.Q = t(Q %*% Yg) %*% Zstar # == reg.est(0) (see formula (9))
                              freq.Qinv = t(Yg) %*% (Qinv %*% Zstar) # == reg.est(1) (see formula (10))
                              
-                             # Set negative values to 0 
-                             freq.obs = ifelse(freq.obs < 0, 0, freq.obs)
-                             freq.Q = ifelse(freq.Q < 0, 0, freq.Q)
+                             # Set negative values to 0 for Qinv
                              freq.Qinv = ifelse(freq.Qinv < 0, 0, freq.Qinv)
                              
                              ## Expected value by means of probabilities using alternative prior where all possible values have the same probability
@@ -340,9 +338,7 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.Q = t(Q %*% Yg) %*% Wstar # == reg.est(0) (see formula (9))
                              freq.Qinv = t(Yg) %*% (Qinv %*% Wstar) # == reg.est(1) (see formula (10))
                           
-                             # Set negative values to 0 
-                             freq.obs = ifelse(freq.obs < 0, 0, freq.obs)
-                             freq.Q = ifelse(freq.Q < 0, 0, freq.Q)
+                             # Set negative values to 0 for Qinv
                              freq.Qinv = ifelse(freq.Qinv < 0, 0, freq.Qinv)
                              
                              # Expected value by means of probabilities using alternative prior where all possible values have the same probability
