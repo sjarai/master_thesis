@@ -11,10 +11,10 @@ In this project, two existing methods from Scholtus et al. (2021) and three new 
 mean square error. By comparing the performances of the different correction methods on simulated data, it is ascertained which correction method is best for a given situation. This repository contains all R-code that was used in this project.
 
 ### Simulation study
-In section 4.1 in the thesis, the design of the simulation study is described. To reproduce the simulation study, two files are needed, namely: Functions.R and Simulation_study.R. The first file, [Functions.R](Functions.R), contains all the functions that are needed in the simulation study. The second file [Simulation_study.R](Simulation_study.R) is a parallelised code that performs the simulation study. It also loads the functions from the first file. It is therefore recommended to save both R-files in the same directory and set the working directory in the code to this  directory. The simulation study takes approximately three days to run.
+In Section 4.1 in the thesis, the design of the simulation study is described. To reproduce the simulation study, two files are needed, namely: Functions.R and Simulation_study.R. The first file ([Functions.R](Functions.R)) contains all the functions that are needed in the simulation study. The second file ([Simulation_study.R](Simulation_study.R)) is a parallelised code that performs the simulation study. It also loads the functions from the first file. It is therefore recommended to save both R-files in the same directory and set the working directory in the code to this  directory. The simulation study takes approximately three days to run.
 
 ### Results
-In section 4.2 in the thesis, the results of the simulation study are described. The figures and tables that were presented in this section can be reproduced by using the file [Results.R](Results.R). To be able to reproduce the results, the simulation study has to be performed in the same R-session, or the saved results from the simulation study from a previous R-session have to be loaded.
+In Section 4.2 in the thesis, the results of the simulation study are described. The figures and tables that were presented in this section can be reproduced by using the file [Results.R](Results.R). To be able to reproduce the results, the simulation study has to be performed in the same R-session, or the saved results from the simulation study from a previous R-session have to be loaded.
 
 ### Contact
 
