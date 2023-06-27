@@ -11,14 +11,15 @@
 
 library(dummies)
 library(ggplot2) 
+library(latex2exp)
 
 
 #############################################################################################
 ### Load the results and set the following variables the same as in the performed simulation.
 ### Note: this is not necessary if the simulation is performed in the same R-session and all
-### the results are still in the global environment. In that case, lines 15-92 can be skipped.
+### the results are still in the global environment. In that case, lines 20-92 can be skipped.
 
-load("S:/Results/Simulation_results.Rdata")
+load("S:/Results/Simulation_results.Rdata") # Copy the path to the data here
 
 n_tab = 10 # number of tables generated
 n = 300 # number of records in data sets
@@ -103,7 +104,7 @@ for (i in 1:n_cat1){
   }
 }
 
-## Make multi dimensional arrays to store the results in n_tab tables
+## Make multi-dimensional arrays to store the results in n_tab tables
 bias_dependent = mse_dependent = var_dependent = rmse_dependent = array(NA, dim = (c(dim(freq1list[[1]]), 21, length(qvec), n_tab)))
 bias_independent = mse_independent = var_independent = rmse_independent = array(NA, dim = (c(dim(freq1list[[1]]), 21, length(qvec), n_tab)))
 RMSE_diff_dep = RMSE_diff_indep = array(NA, dim = (c(dim(freq1list[[1]]), 20, length(qvec), n_tab)))
@@ -223,7 +224,6 @@ drop = c("reg2.prag", "reg2.opt.true", "reg2.opt.obs",
          "reg2.opt.exp1", "reg2.opt.exp2", "reg2.opt.exp3") # remove results second variant of the regularised estimators as they are not included in thesis
 df_means_dep = df_means_dep[!(df_means_dep$Estimator %in% drop),]
 df_means_dep$q = as.numeric(qvec)
-df_means_dep$cat = as.factor(c(rep(1, 2*9), rep(2, 3*9), rep(3, 6*9), rep(4, 3*9))) # categorise each estimator in group (for visualisations)
 
 
 #####################################################################################################
@@ -241,7 +241,6 @@ drop = c("reg2.prag", "reg2.opt.true", "reg2.opt.obs",
          "reg2.opt.exp1", "reg2.opt.exp2", "reg2.opt.exp3")  # remove second variant of the regularised estimators
 df_means_indep = df_means_indep[!(df_means_indep$Estimator %in% drop),]
 df_means_indep$q = as.numeric(qvec)
-df_means_indep$cat = as.factor(c(rep(1, 2*9), rep(2, 3*9), rep(3, 6*9), rep(4, 3*9))) # categorise each estimator in group (for visualisations)
 
 
 ############################################################################################
@@ -281,26 +280,40 @@ df_diff_indep$q = as.numeric(qvec)
 ###################
 ### Plots in thesis
 
+
+## set colors
+colors = c("#FF0000", "#0008FF", 
+           "#00FFD8", "#FFF700", "#FF6BF8", 
+           "#1FFF00", "#32CAFF", "#FF9B00", "#FF0064", "#D49DFF", "#F7FF00",
+           "#E400FF", "#00960E", "#CC0000")
+
+## set labels
+labels = unname(TeX(c("$\\textbf{Q}$", "$\\textbf{Q}^{-1}$",
+                      "$E_1$", "$E_2$", "$E_3$",
+                      "$Reg_{prag}$", "$Reg_{opt(true)}$", "$Reg_{opt(obs)}$", "$Reg_{opt(E_1)}$", "$Reg_{opt(E_2)}$", "$Reg_{opt(E_3)}$",
+                      "$W_{\\widehat{MSE}_1}$", "$W_{\\widehat{MSE}_2}$", "$W_{\\widehat{MSE}_3}$")))
+
 ## Figure 2
 ggplot(df_means_dep, aes(x = q, y = average)) + 
   ylab("Average percentage (%)") +
   geom_line(aes(color = Estimator)) +
   geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
   theme_bw() +
-  scale_color_manual(values = rainbow(14), labels = unique(df_means_dep$Estimator), name = "Kleur", aesthetics = c("color", "fill")) +
-  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = unique(df_means_dep$Estimator), name = "Kleur") +
-  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = unique(df_means_dep$Estimator), name = "Kleur") +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
   geom_ribbon(aes(y = average, ymin = average - sd, ymax = average + sd, fill = Estimator),          
               alpha = 0.05, color = NA) +
   guides(fill = "none") + 
   xlim(0,1) + 
   ylim(0,100) +
   theme(legend.title = element_blank(),
-        axis.text = element_text(size = 15),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
         axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         plot.title = element_text(size = 20),
-        legend.text = element_text(size = 15))
+        legend.text = element_text(size = 20))
 
 ## Figure 3
 ggplot(df_means_indep, aes(x = q, y = average)) + 
@@ -308,17 +321,100 @@ ggplot(df_means_indep, aes(x = q, y = average)) +
   geom_line(aes(color = Estimator)) +
   geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
   theme_bw() +
-  scale_color_manual(values = rainbow(14), labels = unique(df_means_dep$Estimator), name = "Kleur", aesthetics = c("color", "fill")) +
-  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = unique(df_means_dep$Estimator), name = "Kleur") +
-  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = unique(df_means_dep$Estimator), name = "Kleur") +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
   geom_ribbon(aes(y = average, ymin = average - sd, ymax = average + sd, fill = Estimator),          
               alpha = 0.05, color = NA) +
   guides(fill = "none") + 
   xlim(0,1) + 
   ylim(0,100) +
   theme(legend.title = element_blank(),
-        axis.text = element_text(size = 15),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
         axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         plot.title = element_text(size = 20),
-        legend.text = element_text(size = 15))
+        legend.text = element_text(size = 20))
+
+## Figure 4
+ggplot(df_diff_dep, aes(x = q, y = diff)) + 
+  ylab("Average total relative difference") +
+  geom_line(aes(color = Estimator)) +
+  geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
+  theme_bw() +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
+  geom_ribbon(aes(y = diff, ymin = diff - sd, ymax = diff + sd, fill = Estimator),          
+              alpha = 0.05, color = NA) +
+  guides(fill = "none") + 
+  coord_cartesian(ylim = c(-10, 30)) +
+  theme(legend.title = element_blank(),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        legend.text = element_text(size = 20))
+
+## Figure 5
+ggplot(df_diff_indep, aes(x = q, y = diff)) + 
+  ylab("Average total relative difference") +
+  geom_line(aes(color = Estimator)) +
+  geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
+  theme_bw() +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
+  geom_ribbon(aes(y = diff, ymin = diff - sd, ymax = diff + sd, fill = Estimator),          
+              alpha = 0.05, color = NA) +
+  guides(fill = "none") + 
+  coord_cartesian(ylim = c(-10, 30)) +
+  theme(legend.title = element_blank(),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        legend.text = element_text(size = 20))
+
+## Figure E.6
+ggplot(df_diff_dep, aes(x = q, y = diff)) + 
+  ylab("Average total relative difference") +
+  geom_line(aes(color = Estimator)) +
+  geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
+  theme_bw() +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
+  geom_ribbon(aes(y = diff, ymin = diff - sd, ymax = diff + sd, fill = Estimator),          
+              alpha = 0.05, color = NA) +
+  guides(fill = "none") + 
+  theme(legend.title = element_blank(),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        legend.text = element_text(size = 20))
+
+## Figure E.7
+ggplot(df_diff_indep, aes(x = q, y = diff)) + 
+  ylab("Average total relative difference") +
+  geom_line(aes(color = Estimator)) +
+  geom_point(aes(color = Estimator, shape = Estimator, size = Estimator)) +
+  theme_bw() +
+  scale_color_manual(values = colors, labels = labels, name = "Kleur", aesthetics = c("color", "fill")) +
+  scale_shape_manual(values = c(15, 15, 16, 16, 16, 17, 17, 17, 17, 17, 17, 18, 18, 18), labels = labels, name = "Kleur") +
+  scale_size_manual(values = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4), labels = labels, name = "Kleur") +
+  geom_ribbon(aes(y = diff, ymin = diff - sd, ymax = diff + sd, fill = Estimator),          
+              alpha = 0.05, color = NA) +
+  guides(fill = "none") + 
+  theme(legend.title = element_blank(),
+        legend.text.align = 0,
+        axis.text = element_text(size = 18),
+        axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        legend.text = element_text(size = 20))

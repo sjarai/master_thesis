@@ -77,7 +77,7 @@ v.opt_fun = function(n, q, freq, R, S){
   return(v)
 }
 
-## family of regularized estimators variant 1 where nu is a scalar
+## family of regularized estimators variant 1 where nu is a scalar and hence all individual cells have the same value
 ## (see formulas (15) and (17) in thesis in combination with formulas (15) and (17) in Pijpers (2021))
 reg.est1 = function(n, q, Yg, v, Zstar){
   lambda = ((n-1)^2-(n*q-1)^2)/(n*(n-1)*(1-q))
@@ -85,8 +85,8 @@ reg.est1 = function(n, q, Yg, v, Zstar){
   t(Yg) %*% ((((n*q)-1)/(n-1-(n*v*lambda*(1-q))) * diag(n)) + (((1-q)/(n-1-(n*v*lambda*(1-q))))*(1-(v*lambda))*u%*%t(u))) %*% Zstar
 }
 
-## family of regularized estimators variant 1 where nu is a matrix with unique values for each element 
-## (see formula (15) and (16) in combination with formulas (15) and (17) in Pijpers (2021))
+## family of regularized estimators variant 1 where nu is a matrix with unique values for each individual cell 
+## (see formula (15) and (16) in thesis in combination with formulas (15) and (17) in Pijpers (2021))
 reg.est_opt1 = function(n, q, n_cat1, n_cat2, Yg, v, Zstar){
   out = matrix(nrow = n_cat1, ncol = n_cat2)
   lambda = ((n-1)^2-(n*q-1)^2)/(n*(n-1)*(1-q))
@@ -118,14 +118,14 @@ u.opt_fun = function(n, q, freq, R, S){
   return(u)
 }
 
-## family of regularized estimators variant 2 where mu is a scalar
+## family of regularized estimators variant 2 where mu is a scalar and hence all individual cells have the same value
 ## (see formula (A.30) in combination with formula (A.34))
 reg.est2 = function(n, q, Yg, mu, Zstar) {
   u = c(rep(1, n))
   t(Yg) %*% ((((n-1)/((mu*n*(q-1)) + (n-1))) * diag(n)) - (((mu*(1-q))/((mu*n*(q-1))+(n-1)))*u%*%t(u))) %*% Zstar
 }
 
-## family of regularized estimators variant 2 where mu is a matrix with unique values for each element 
+## family of regularized estimators variant 2 where mu is a matrix with unique values for each individual cell 
 ## (see formula (A.30) in combination with formula (A.33))
 reg.est_opt2 = function(n, q, n_cat1, n_cat2, Yg, mu, Zstar){
   out = matrix(nrow = n_cat1, ncol = n_cat2)
@@ -290,8 +290,8 @@ alt_prior_fun = function(U, t_obs, t){
 }
 
 
-################################################################
-### Expected values for the contingency table from section 3.3.4
+###################################################################################
+### Expected values for the contingency table from section 3.3.4 (see formula (28))
 
 expected_values_fun = function(n_cat1, n_cat2, probabilities){
   out = matrix(NA, nrow = n_cat1, ncol = n_cat2)

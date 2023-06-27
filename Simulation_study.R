@@ -63,8 +63,8 @@ n_sim = 10000
 ########################
 ### Discretize variables
 
-n_cat1 = 5 # number of variables in data set 1
-n_cat2 = 5 # number of variables in data set 2
+n_cat1 = 5 # number of categories for variable y in data set 1
+n_cat2 = 5 # number of categories for variable z & w in data set 2
 
 Ylist = vector(mode = "list", length = n_tab)
 Zlist = vector(mode = "list", length = n_tab)
@@ -218,28 +218,28 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.exp3 = expected_values_fun(n_cat1, n_cat2, probabilities3) # (see formula (28))
                              
                              
-                             ## compute the observed optimal nu for the regularised estimators
+                             ## compute the observed optimal nu for the regularised estimators (see formula (16) in combination with (8))
                              v.opt.obs = v.opt_fun(n = n, q = q, freq = freq.obs, R = R1, S = S1)
                              
-                             ## compute the expected optimal nu for the regularised estimators (using prior 1)
+                             ## compute the expected optimal nu for the regularised estimators (using prior 1) (see formula (16) in combination with (28) and (18))
                              v.opt.exp1 = v.opt_fun(n = n, q = q, freq = freq.exp1, R = R1, S = S1)
                              
-                             ## compute the expected optimal nu for the regularised estimators (using prior 2)
+                             ## compute the expected optimal nu for the regularised estimators (using prior 2) (see formula (16) in combination with (28) and (19))
                              v.opt.exp2 = v.opt_fun(n = n, q = q, freq = freq.exp2, R = R1, S = S1)
                              
-                             # compute the expected optimal nu for the regularised estimators (using prior 3)
+                             # compute the expected optimal nu for the regularised estimators (using prior 3) (see formula (16) in combination with (28) and (21))
                              v.opt.exp3 = v.opt_fun(n = n, q = q, freq = freq.exp3, R = R1, S = S1)
                              
-                             # compute the observed optimal mu for the regularised estimators !not included in thesis!
+                             # compute the observed optimal mu for the regularised estimators (see formula (A.33) in combination with (8)) !not included in thesis!
                              u.opt.obs = u.opt_fun(n = n, q = q, freq = freq.obs, R = R1, S = S1)
                              
-                             # compute the observed optimal mu for the regularized estimators (using prior 1) !not included in thesis!
+                             # compute the observed optimal mu for the regularized estimators (using prior 1) (see formula (A.33) in combination with (28) and (18)) !not included in thesis! 
                              u.opt.exp1 = u.opt_fun(n = n, q = q, freq = freq.exp1, R = R1, S = S1)
                              
-                             # compute the expected optimal mu for the regularized estimators (using prior 2) !not included in thesis!
+                             # compute the expected optimal mu for the regularized estimators (using prior 2) (see formula (A.33) in combination with (28) and (19)) !not included in thesis!
                              u.opt.exp2 = u.opt_fun(n = n, q = q, freq = freq.exp2, R = R1, S = S1)
                              
-                             # compute the observed optimal mu for the regularized estimators  (using prior 3) !not included in thesis!
+                             # compute the observed optimal mu for the regularized estimators  (using prior 3) (see formula (A.33) in combination with (28) and (21)) !not included in thesis!
                              u.opt.exp3 = u.opt_fun(n = n, q = q, freq = freq.exp3, R = R1, S = S1)
                              
                              # regularised estimators proposed by Frank Pijpers (2021) (see formula (15))
@@ -249,7 +249,8 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.reg.opt.exp1 = reg.est_opt1(n = n, q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp1, Zstar = Zstar)
                              freq.reg.opt.exp2 = reg.est_opt1(n = n, q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp2, Zstar = Zstar)
                              freq.reg.opt.exp3 = reg.est_opt1(n = n, q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp3, Zstar = Zstar)
-                             # !the following six use the second variant of the regularised estimator and are not included in the thesis! See Appendix A
+                             
+                             # !the following six use the second variant of the regularised estimator and are not included in the thesis! (see formula (A.30))
                              freq.reg2.prag = reg.est2(n = n,  q = q, Yg = Yg, mu = u.prag, Zstar = Zstar)
                              freq.reg2.opt.true = reg.est_opt2(n = n, q = q, n_cat1, n_cat2, Yg = Yg, mu = u.opt.true, Zstar = Zstar)
                              freq.reg2.opt.obs = reg.est_opt2(n = n, q = q, n_cat1, n_cat2, Yg = Yg, mu = u.opt.obs, Zstar = Zstar)
@@ -258,19 +259,21 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.reg2.opt.exp3 = reg.est_opt2(n = n, q = q, n_cat1, n_cat2, Yg = Yg, mu = u.opt.exp3, Zstar = Zstar)
                              
                              
-                             # Weigh the three correction methods Q, Qinv and naive with their MSE (see formula (29))
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (18), and (14))
                              e_var_exp1 = var_fun(n = n, q = q, freq = freq.exp1, R = R1, S = S1)
                              emse_obs1 = ((-(1-q)/(n-1))*(n*freq.exp1-(R1*S1)))^2 + e_var_exp1
                              emse_Q1 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp1-(R1*S1)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp1
                              emse_Qinv1 = ((n-1)^2/(n*q-1)) * e_var_exp1
                              freq.weighed.emse1 = (((1/emse_Q1)*freq.Q) + ((1/emse_obs1)*freq.obs) + ((1/emse_Qinv1)*freq.Qinv)) / ((1/emse_Q1) + (1/emse_obs1) + (1/emse_Qinv1))
                              
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (19), and (14))
                              e_var_exp2 = var_fun(n = n, q = q, freq = freq.exp2, R = R1, S = S1)
                              emse_obs2 = ((-(1-q)/(n-1))*(n*freq.exp2-(R1*S1)))^2 + e_var_exp2
                              emse_Q2 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp2-(R1*S1)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp2
                              emse_Qinv2 = ((n-1)^2/(n*q-1)) * e_var_exp2
                              freq.weighed.emse2 = (((1/emse_Q2)*freq.Q) + ((1/emse_obs2)*freq.obs) + ((1/emse_Qinv2)*freq.Qinv)) / ((1/emse_Q2) + (1/emse_obs2) + (1/emse_Qinv2))
                              
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (21), and (14))
                              e_var_exp3 = var_fun(n = n, q = q, freq = freq.exp3, R = R1, S = S1)
                              emse_obs3 = ((-(1-q)/(n-1))*(n*freq.exp3-(R1*S1)))^2 + e_var_exp3
                              emse_Q3 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp3-(R1*S1)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp3
@@ -331,7 +334,7 @@ res_parallel = foreach(iq = 1:length(qvec),
                            dev2 = sapply(Clist, function(C) {
                              
                              # Simulate linkage errors
-                             Wstar = C %*% Wg # 
+                             Wstar = C %*% Wg  
                              
                              # estimators considered by Scholtus, Shlomo and De Waal (2022)
                              freq.obs = t(Yg) %*% Wstar # (see formula (8))
@@ -354,28 +357,28 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.exp3 = expected_values_fun(n_cat1, n_cat2, probabilities3) # (see formula (28))
                              
                              
-                             # compute the observed optimal v for the regularised estimators
+                             ## compute the observed optimal nu for the regularised estimators (see formula (16) in combination with (8))
                              v.opt.obs = v.opt_fun(n = n, q = q, freq = freq.obs, R = R2, S = S2)
                              
-                             # compute the expected optimal v for the regularised estimators (using prior 1)
+                             ## compute the expected optimal nu for the regularised estimators (using prior 1) (see formula (16) in combination with (28) and (18))
                              v.opt.exp1 = v.opt_fun(n = n, q = q, freq = freq.exp1, R = R2, S = S2)
                              
-                             # compute the expected optimal v for the regularised estimators (using prior 2)
+                             ## compute the expected optimal nu for the regularised estimators (using prior 2) (see formula (16) in combination with (28) and (19))
                              v.opt.exp2 = v.opt_fun(n = n, q = q, freq = freq.exp2, R = R2, S = S2)
                              
-                             # compute the expected optimal v for the regularised estimators (using prior 3)
+                             # compute the expected optimal nu for the regularised estimators (using prior 3) (see formula (16) in combination with (28) and (21))
                              v.opt.exp3 = v.opt_fun(n = n, q = q, freq = freq.exp3, R = R2, S = S2)
                              
-                             # compute the observed optimal u for the regularised estimators !not included in thesis!
+                             # compute the observed optimal mu for the regularised estimators (see formula (A.33) in combination with (8)) !not included in thesis!
                              u.opt.obs = u.opt_fun(n = n, q = q, freq = freq.obs, R = R2, S = S2)
                              
-                             # compute the expected optimal u for the regularised estimators (using prior 1) !not included in thesis!
+                             # compute the observed optimal mu for the regularized estimators (using prior 1) (see formula (A.33) in combination with (28) and (18)) !not included in thesis! 
                              u.opt.exp1 = u.opt_fun(n = n, q = q, freq = freq.exp1, R = R2, S = S2)
                              
-                             # compute the observed optimal u for the regularized estimators (using prior 2) !not included in thesis!
+                             # compute the expected optimal mu for the regularized estimators (using prior 2) (see formula (A.33) in combination with (28) and (19)) !not included in thesis!
                              u.opt.exp2 = u.opt_fun(n = n, q = q, freq = freq.exp2, R = R2, S = S2)
                              
-                             # compute the observed optimal u for the regularized estimators(using prior 3) !not included in thesis!
+                             # compute the observed optimal mu for the regularized estimators  (using prior 3) (see formula (A.33) in combination with (28) and (21)) !not included in thesis!
                              u.opt.exp3 = u.opt_fun(n = n, q = q, freq = freq.exp3, R = R2, S = S2)
                              
                              # regularised estimators proposed by Frank Pijpers (2021) (see formula (15))
@@ -385,7 +388,8 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.reg.opt.exp1 = reg.est_opt1(n = n,  q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp1, Zstar = Wstar)
                              freq.reg.opt.exp2 = reg.est_opt1(n = n,  q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp2, Zstar = Wstar)
                              freq.reg.opt.exp3 = reg.est_opt1(n = n,  q = q, n_cat1, n_cat2, Yg = Yg, v = v.opt.exp3, Zstar = Wstar)
-                             # !the following six use the second variant of the regularised estimator and are not included in the thesis! See Appendix A
+                             
+                             # !the following six use the second variant of the regularised estimator and are not included in the thesis! (see formula (A.30))
                              freq.reg2.prag = reg.est2(n = n,  q = q, Yg = Yg, mu = u.prag, Zstar = Wstar)
                              freq.reg2.opt.true = reg.est_opt2(n = n,  q = q, n_cat1, n_cat2, Yg = Yg, mu = u.opt.true, Zstar = Wstar)
                              freq.reg2.opt.obs = reg.est_opt2(n = n,  q = q, n_cat1, n_cat2, Yg = Yg,mu = u.opt.obs, Zstar = Wstar)
@@ -394,19 +398,21 @@ res_parallel = foreach(iq = 1:length(qvec),
                              freq.reg2.opt.exp3 = reg.est_opt2(n = n, q = q, n_cat1, n_cat2, Yg = Yg,mu = u.opt.exp3, Zstar = Wstar)
                              
                              
-                             # Weigh the three correction methods Q, Qinv and naive with their MSE (see formula (29))
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (18), and (14))
                              e_var_exp1 = var_fun(n = n, q = q, freq = freq.exp1, R = R2, S = S2)
                              emse_obs1 = ((-(1-q)/(n-1))*(n*freq.exp1-(R2*S2)))^2 + e_var_exp1
                              emse_Q1 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp1-(R2*S2)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp1
                              emse_Qinv1 = ((n-1)^2/(n*q-1)) * e_var_exp1
                              freq.weighed.emse1 = (((1/emse_Q1)*freq.Q) + ((1/emse_obs1)*freq.obs) + ((1/emse_Qinv1)*freq.Qinv)) / ((1/emse_Q1) + (1/emse_obs1) + (1/emse_Qinv1))
                              
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (19), and (14))
                              e_var_exp2 = var_fun(n = n, q = q, freq = freq.exp2, R = R2, S = S2)
                              emse_obs2 = ((-(1-q)/(n-1))*(n*freq.exp2-(R2*S2)))^2 + e_var_exp2
                              emse_Q2 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp2-(R2*S2)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp2
                              emse_Qinv2 = ((n-1)^2/(n*q-1)) * e_var_exp2
                              freq.weighed.emse2 = (((1/emse_Q2)*freq.Q) + ((1/emse_obs2)*freq.obs) + ((1/emse_Qinv2)*freq.Qinv)) / ((1/emse_Q2) + (1/emse_obs2) + (1/emse_Qinv2))
                              
+                             # Weight the three correction methods Q, Qinv and naive with their MSE (see formula (29) in combination with (28), (21), and (14))
                              e_var_exp3 = var_fun(n = n, q = q, freq = freq.exp3, R = R2, S = S2)
                              emse_obs3 = ((-(1-q)/(n-1))*(n*freq.exp3-(R2*S2)))^2 + e_var_exp3
                              emse_Q3 = (-(1+((n*q-1)/(n-1))) * ((1-q)/(n-1)) * (n*freq.exp3-(R2*S2)))^2 *  + ((n*q-1)^2/(n-1)^2) * e_var_exp3
