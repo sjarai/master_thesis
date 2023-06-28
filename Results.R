@@ -125,13 +125,13 @@ for (i in 1:n_tab){
     ## Compute bias, mse, var, and rmse for q = j, table i with dependent attributes
     bias_dependent[,,,j,i] = apply(res_parallel[[j]][[1]][[i]], 1:3, mean)
     mse_dependent[,,,j,i] = apply(res_parallel[[j]][[1]][[i]]^2, 1:3, mean)
-    var_dependent[,,,j,i] = mse_dependent[,,,j,i] - bias_dependent[,,,j,i]
+    var_dependent[,,,j,i] = mse_dependent[,,,j,i] - bias_dependent[,,,j,i]^2
     rmse_dependent[,,,j,i] = sqrt(mse_dependent[,,,j,i])
     
     ## Compute bias, mse, var, and rmse for q = j, table i with independent attributes
     bias_independent[,,,j,i] = apply(res_parallel[[j]][[2]][[i]], 1:3, mean)
     mse_independent[,,,j,i] = apply(res_parallel[[j]][[2]][[i]]^2, 1:3, mean)
-    var_independent[,,,j,i] = mse_independent[,,,j,i] - bias_independent[,,,j,i]
+    var_independent[,,,j,i] = mse_independent[,,,j,i] - bias_independent[,,,j,i]^2
     rmse_independent[,,,j,i] = sqrt(mse_independent[,,,j,i])
     
     ## Percentages that the naive approach outperforms the alternative approach for tables with dependent attributes and q = j
